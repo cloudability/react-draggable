@@ -70,7 +70,7 @@ export function getControlPosition(e: MouseTouchEvent, touchIdentifier: ?number,
   if (typeof touchIdentifier === 'number' && !touchObj) return null; // not the right touch
   const node = ReactDOM.findDOMNode(draggableCore);
   // User can provide an offsetParent if desired.
-  const offsetParent = draggableCore.props.offsetParent || node.offsetParent || node.ownerDocument.body;
+  const offsetParent = draggableCore.props.offsetParent || node.offsetParent || node.parentNode || node.ownerDocument.body;
   return offsetXYFromParent(touchObj || e, offsetParent);
 }
 
