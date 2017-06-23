@@ -1763,7 +1763,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (typeof touchIdentifier === 'number' && !touchObj) return null; // not the right touch
 	  var node = _reactDom2.default.findDOMNode(draggableCore);
 	  // User can provide an offsetParent if desired.
-	  var offsetParent = draggableCore.props.offsetParent || node.offsetParent || node.ownerDocument.body;
+	  var offsetParent = draggableCore.props.offsetParent || node.offsetParent || node.parentNode || node.ownerDocument.body;
 	  return (0, _domFns.offsetXYFromParent)(touchObj || e, offsetParent);
 	}
 	
