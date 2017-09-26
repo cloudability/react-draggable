@@ -677,7 +677,7 @@ function getControlPosition(e /*: MouseTouchEvent*/, touchIdentifier /*: ?number
   if (typeof touchIdentifier === 'number' && !touchObj) return null; // not the right touch
   var node = findDOMNode(draggableCore);
   // User can provide an offsetParent if desired.
-  var offsetParent = draggableCore.props.offsetParent || node.offsetParent || node.ownerDocument.body;
+  var offsetParent = draggableCore.props.offsetParent || node.offsetParent || node.parentNode || node.ownerDocument.body;
   return (0, _domFns.offsetXYFromParent)(touchObj || e, offsetParent);
 }
 
@@ -1105,7 +1105,7 @@ DraggableCore.propTypes = {
    * instead of using the parent node.
    */
   offsetParent: function offsetParent(props, propName) {
-    if (process.browser && props[propName] && props[propName].nodeType !== 1) {
+    if (process.browser === true && props[propName] && props[propName].nodeType !== 1) {
       throw new Error('Draggable\'s offsetParent must be a DOM Node.');
     }
   },
@@ -1371,15 +1371,16 @@ var Draggable = function (_React$Component) {
         newState.y += _this.state.slackY;
 
         // Get bound position. This will ceil/floor the x and y within the boundaries.
-        // $FlowBug
+
+        var _getBoundPosition = (0, _positionFns.getBoundPosition)(_this, newState.x, newState.y),
+            _getBoundPosition2 = _slicedToArray(_getBoundPosition, 2),
+            newStateX = _getBoundPosition2[0],
+            newStateY = _getBoundPosition2[1];
+
+        newState.x = newStateX;
+        newState.y = newStateY;
 
         // Recalculate slack by noting how much was shaved by the boundPosition handler.
-        var _getBoundPosition = (0, _positionFns.getBoundPosition)(_this, newState.x, newState.y);
-
-        var _getBoundPosition2 = _slicedToArray(_getBoundPosition, 2);
-
-        newState.x = _getBoundPosition2[0];
-        newState.y = _getBoundPosition2[1];
         newState.slackX = _this.state.slackX + (_x - newState.x);
         newState.slackY = _this.state.slackY + (_y - newState.y);
 
