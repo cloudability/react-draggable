@@ -1361,7 +1361,7 @@
 	  if (typeof touchIdentifier === 'number' && !touchObj) return null; // not the right touch
 	  var node = findDOMNode(draggableCore);
 	  // User can provide an offsetParent if desired.
-	  var offsetParent = draggableCore.props.offsetParent || node.offsetParent || node.ownerDocument.body;
+	  var offsetParent = draggableCore.props.offsetParent || node.offsetParent || node.parentNode || node.ownerDocument.body;
 	  return offsetXYFromParent(touchObj || e, offsetParent);
 	}
 
