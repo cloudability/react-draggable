@@ -1,8 +1,7 @@
 # Mostly lifted from https://andreypopp.com/posts/2013-05-16-makefile-recipes-for-node-js.html
 # Thanks @andreypopp
 
-export BIN := $(shell npm bin)
-export NODE_ENV = test
+export BIN := $(shell yarn bin)
 DIST = dist
 LIB = $(DIST)/react-draggable.js
 MIN = $(DIST)/react-draggable.min.js
@@ -21,19 +20,13 @@ build: $(LIB) $(MIN)
 
 # Allows usage of `make install`, `make link`
 install link:
-	@npm $@
-
-dist/%.min.js: $(LIB) $(BIN)
-	$(BIN)/uglifyjs $< \
-	  --output $@ \
-	  --source-map "filename=$@.map,root=$(basename $<.map),content=$<.map" \
-	  --compress
+	@yarn $@
 
 dist/%.js: $(BIN)
-	@$(BIN)/webpack --devtool source-map
+	@$(BIN)/rollup -c
 
 test: $(BIN)
-	@$(BIN)/karma start --single-run
+	@NODE_ENV=test $(BIN)/karma start --single-run
 
 dev: $(BIN)
 	script/build-watch
@@ -67,4 +60,4 @@ release-major: test clean build
 
 publish: clean build
 	git push --tags origin HEAD:master
-	npm publish
+	yarn publish

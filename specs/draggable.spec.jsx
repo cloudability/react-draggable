@@ -56,7 +56,7 @@ describe('react-draggable', function () {
         assert(node.getAttribute('style').indexOf('touch-action: none') >= 0);
       }
       assert(node.getAttribute('style').indexOf('color: black') >= 0);
-      assert(node.getAttribute('style').indexOf(transformStyle + ': translate(0px, 0px)') >= 0);
+      assert(new RegExp(transformStyle + ': translate\\(0px(?:, 0px)?\\)').test(node.getAttribute('style')));
       assert(node.getAttribute('class') === 'foo react-draggable');
     });
 
@@ -132,6 +132,24 @@ describe('react-draggable', function () {
       assert(drag.props.onStart === handleStart);
       assert(drag.props.onDrag === handleDrag);
       assert(drag.props.onStop === handleStop);
+    });
+
+    it('should adjust draggable data output when `scale` prop supplied', function () {
+      function onDrag(event, data) {
+        assert(data.x === 200);
+        assert(data.y === 200);
+        assert(data.deltaX === 200);
+        assert(data.deltaY === 200);
+      }
+      drag = TestUtils.renderIntoDocument(
+        <Draggable 
+          scale={0.5}
+          onDrag={onDrag}>
+          <div />
+        </Draggable>
+      );
+
+      simulateMovementFromTo(drag, 0, 0, 100, 100);
     });
 
     it('should throw when setting className', function () {
@@ -239,6 +257,22 @@ describe('react-draggable', function () {
       assert(style.indexOf('transform: translate(100px, 100px);') >= 0);
     });
 
+    it('should render with positionOffset set as string transform and handle subsequent translate() for DOM nodes', function () {
+      let dragged = false;
+      drag = TestUtils.renderIntoDocument(
+        <Draggable positionOffset={{x: '10%', y: '10%'}} onDrag={function() { dragged = true; }}>
+          <div />
+        </Draggable>
+      );
+
+      const node = ReactDOM.findDOMNode(drag);
+      simulateMovementFromTo(drag, 0, 0, 100, 100);
+
+      const style = node.getAttribute('style');
+      assert(dragged === true);
+      assert(style.indexOf('translate(10%, 10%) translate(100px, 100px);') >= 0);
+    });
+
     it('should honor "x" axis', function () {
       let dragged = false;
       drag = TestUtils.renderIntoDocument(
@@ -252,7 +286,7 @@ describe('react-draggable', function () {
 
       const style = node.getAttribute('style');
       assert(dragged === true);
-      assert(style.indexOf('transform: translate(100px, 0px);') >= 0);
+      assert(/transform: translate\(100px(?:, 0px)?\);/.test(style));
     });
 
     it('should honor "y" axis', function () {
@@ -284,7 +318,7 @@ describe('react-draggable', function () {
 
       const style = node.getAttribute('style');
       assert(dragged === true);
-      assert(style.indexOf('transform: translate(0px, 0px);') >= 0);
+      assert(/transform: translate\(0px(?:, 0px)?\);/.test(style));
     });
 
     it('should detect if an element is instanceof SVGElement and set state.isElementSVG to true', function() {

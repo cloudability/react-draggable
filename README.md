@@ -75,14 +75,14 @@ an intermediate wrapper (`<Draggable><span>...</span></Draggable>`) in this case
 ### Draggable Usage
 
 View the [Demo](http://mzabriskie.github.io/react-draggable/example/) and its
-[source](/example/index.html) for more.
+[source](/example/example.js) for more.
 
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Draggable from 'react-draggable';
 
-class App extends React.Element {
+class App extends React.Component {
 
   eventLogger = (e: MouseEvent, data: Object) => {
     console.log('Event: ', e);
@@ -97,6 +97,7 @@ class App extends React.Element {
         defaultPosition={{x: 0, y: 0}}
         position={null}
         grid={[25, 25]}
+        scale={1}
         onStart={this.handleStart}
         onDrag={this.handleDrag}
         onStop={this.handleStop}>
@@ -217,6 +218,17 @@ onStop: DraggableEventHandler,
 // becomes 'controlled' and is not responsive to user input. Use `position`
 // if you need to have direct control of the element.
 position: {x: number, y: number}
+
+// A position offset to start with. Useful for giving an initial position
+// to the element. Differs from `defaultPosition` in that it does not
+// affect the postiion returned in draggable callbacks, and in that it
+// accepts strings, like `{x: '10%', y: '10%'}`.
+positionOffset: {x: number | string, y: number | string},
+
+// Specifies the scale of the canvas your are dragging this element on. This allows
+// you to, for example, get the correct drag deltas while you are zoomed in or out via
+// a transform or matrix in the parent of this element.
+scale: number
 }
 ```
 
@@ -272,7 +284,8 @@ on itself and thus must have callbacks attached to be useful.
   onStart: DraggableEventHandler,
   onDrag: DraggableEventHandler,
   onStop: DraggableEventHandler,
-  onMouseDown: (e: MouseEvent) => void
+  onMouseDown: (e: MouseEvent) => void,
+  scale: number
 }
 ```
 
